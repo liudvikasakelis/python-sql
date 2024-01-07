@@ -29,7 +29,6 @@ cursor.executemany("INSERT INTO t2 VALUES(?, ?, ?)", data2)
 cursor.execute(str(pypika.Query.from_("t1").select('*'))).fetchall()
 
 
-
 pd.read_sql(
     str(pypika.Query
             .from_("t1")
@@ -39,4 +38,4 @@ pd.read_sql(
     sqlite_con
 )
 
-
+pd.read_sql("PRAGMA table_info(t1);", sqlite_con)
