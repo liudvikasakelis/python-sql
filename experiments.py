@@ -1,5 +1,6 @@
 import pypika
 import sqlite3
+from pypika import functions as fn, Table
 
 import pandas as pd
 
@@ -9,8 +10,6 @@ cursor = sqlite_con.cursor()
 
 cursor.execute("CREATE TABLE t1(id, id2, string1)")
 cursor.execute("CREATE TABLE t2(id, id2, string1)")
-
-
 
 data1 = [
     (1, 1, "11"),
@@ -27,17 +26,49 @@ data2 = [
 cursor.executemany("INSERT INTO t1 VALUES(?, ?, ?)", data1)
 cursor.executemany("INSERT INTO t2 VALUES(?, ?, ?)", data2)
 
-
-cursor.execute(str(pypika.Query.from_("t1").select('*'))).fetchall()
-
-
-pd.read_sql(
+a = pd.read_sql(
     str(pypika.Query
             .from_("t1")
             .select('*')
-            .limit(1)
-        ),
+            .limit(3)),
     sqlite_con
 )
 
-pd.read_sql("PRAGMA table_info(t1);", sqlite_con)
+t1 = Table('t1')
+
+pd.read_sql(
+    str(pypika.Query\
+        .from_(t1)\
+        .groupby(t1.id2)\
+        .select(t1.id2, fn.Sum(t1.id))),
+    sqlite_con
+)
+
+tmp = pypika.Query.from_("t1")
+
+class MyTable(pypika.Query):
+    def __init__(self, connection, table_name):
+        self.table_name = table_name
+        self.connection = connection
+
+    def __repr__(self):
+        return(pd.read_sql(
+            str(self.select("*").limit(10)),
+            self.connection
+        ).__repr__())
+
+
+tbl = MyTable(sqlite_con, table_name="t1")
+
+tbl.select("t1.*")
+
+
+
+tbl.select("id2")
+
+print(pypika.Query\
+        .from_(t1)\
+        .groupby(t1.id2)\
+        .select(t1.id2, fn.Sum(t1.id)))
+
+str(tbl)
