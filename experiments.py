@@ -10,6 +10,8 @@ cursor = sqlite_con.cursor()
 cursor.execute("CREATE TABLE t1(id, id2, string1)")
 cursor.execute("CREATE TABLE t2(id, id2, string1)")
 
+
+
 data1 = [
     (1, 1, "11"),
     (2, 1, "21"),
