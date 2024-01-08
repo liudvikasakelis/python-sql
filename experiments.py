@@ -44,10 +44,9 @@ pd.read_sql(
     sqlite_con
 )
 
-tmp = pypika.Query.from_("t1")
-
-class MyTable(pypika.Query):
+class MyTable(pypika.queries.QueryBuilder):
     def __init__(self, connection, table_name):
+        pypika.queries.QueryBuilder.__init__(self)
         self.table_name = table_name
         self.connection = connection
 
@@ -57,12 +56,18 @@ class MyTable(pypika.Query):
             self.connection
         ).__repr__())
 
-
 tbl = MyTable(sqlite_con, table_name="t1")
+tbl
 
-tbl.select("t1.*")
+tbl.from_("t1").select("id")
+
+## Goal:
+## >>> tbl
+## Now works:
+## >>> tbl.form_("t1")
 
 
+pypika.Query.from_("t1").select("id")
 
 tbl.select("id2")
 
