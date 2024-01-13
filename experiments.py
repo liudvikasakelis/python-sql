@@ -46,17 +46,22 @@ pd.read_sql(
 
 class MyTable(pypika.queries.QueryBuilder):
     def __init__(self, connection, table_name):
-        pypika.queries.QueryBuilder.__init__(self)
+        self.QueryBuilder = pypika.Query
         self.table_name = table_name
-        self.connection = connection
+        self.connection = connection  # self.from_(t1)
 
     def __repr__(self):
         return(pd.read_sql(
             str(self.select("*").limit(10)),
             self.connection
         ).__repr__())
+    
+    def getTable(self, table_name):
+        self.QueryBuilder.from_(table_name)
+        return self
+    
 
-tbl = MyTable(sqlite_con, table_name="t1")
+tbl = MyTable(sqlite_con).getTable( table_name="t1")
 tbl
 
 tbl.from_("t1").select("id")
